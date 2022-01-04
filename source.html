@@ -1,0 +1,245 @@
+<div id="glowscript" class="glowscript">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link type="text/css" href="https://www.glowscript.org/css/redmond/2.1/jquery-ui.custom.css" rel="stylesheet" />
+    <link type="text/css" href="https://www.glowscript.org/css/ide.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://www.glowscript.org/lib/jquery/2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.glowscript.org/lib/jquery/2.1/jquery-ui.custom.min.js"></script>
+    <script type="text/javascript" src="https://www.glowscript.org/package/glow.3.0.min.js"></script>
+    <script type="text/javascript" src="https://www.glowscript.org/package/RSrun.3.0.min.js"></script>
+    <script type="text/javascript"><!--//--><![CDATA]//><!--
+
+// START JAVASCRIPT
+;(function() {;
+var drag, lastpos;
+async function __main__() {
+"use strict";
+
+    var version, display, vector, print, arange, __name__, type, scene, RS_ls, table, net, launch_pos, angle_label, angle2_label, spin_label, speed_label, use_ruler, dx, box_x, box_x_max, dy, box_y, box_y_max, angle, delta_angle, max_angle, min_angle2, delta_angle2, max_angle2, min_spin, delta_spin, max_spin, air_density, spin_vs_range, spin_vs_range1, inverse_regression, angle2, spin, projectile, theta, drag_coeff, lift_coeff, grav_field, dt, time, grav_force, vhat, drag_force, vhat_perp, life_force, force;
+    version = RS_list_decorate([ "3.0", "glowscript" ]);
+    Array.prototype['+'] = function(r) {return this.concat(r)}
+    Array.prototype['*'] = function(r) {return __array_times_number(this, r)}
+    window.__GSlang = "vpython";
+    display = canvas;
+    vector = vec;
+    print = GSprint;
+    arange = range;
+    __name__ = "__main__";
+    type = pytype;
+    scene = canvas();
+    "3";
+    scene.autoscale = true;
+    "4";
+    scene.center = vec(2["-u"](), .5, 0);
+    "7";
+    table = RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({pos: vec(4.75["-u"]()["+"](2.74["/"](2)), 0, 0), size: vec(2.74, .04, 1.525), color: color.green, opacity: .5})]);
+    "8";
+    net = RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({pos: vec(4.75["-u"]()["+"](2.74["/"](2)), .08, 0), size: vec(.025, .1525, 1.83), color: color.white, opacity: 1})]);
+    "10";
+    launch_pos = vector(5["-u"](), .25, 0);
+    "13";
+    angle_label = RS_interpolate_kwargs.call(this, label, [RS_desugar_kwargs({pos: vec(5["-u"](), .5["-u"](), 0), text: "Launch angle: ", xoffset: 1, line: 0, box: false, opacity: 0})]);
+    "14";
+    angle2_label = RS_interpolate_kwargs.call(this, label, [RS_desugar_kwargs({pos: vec(5["-u"](), 1["-u"](), 0), text: "x-z axis angle: ", xoffset: 1, line: 0, box: false, opacity: 0})]);
+    "15";
+    spin_label = RS_interpolate_kwargs.call(this, label, [RS_desugar_kwargs({pos: vec(5["-u"](), 1.5["-u"](), 0), text: "Rotation: ", xoffset: 1, line: 0, box: false, opacity: 0})]);
+    "16";
+    speed_label = RS_interpolate_kwargs.call(this, label, [RS_desugar_kwargs({pos: vec(5["-u"](), 2["-u"](), 0), text: "Launch speed: ", xoffset: 1, line: 0, box: false, opacity: 0})]);
+    "19";
+    "20";
+    drag = false;
+    "21";
+    async function down() {
+        var RS_ls, laspos;
+        "22";
+        "23";
+        scene.center = scene.mouse.pos;
+        "24";
+        drag = true;
+        "25";
+        laspos = vector(scene.mouse.pos.x, scene.mouse.pos.y, 0);
+    };
+    if (!down.__module__) Object.defineProperties(down, {
+        __module__ : {value: "__main__"}
+    });
+
+    "27";
+    async function up() {
+        "28";
+        "29";
+        drag = false;
+    };
+    if (!up.__module__) Object.defineProperties(up, {
+        __module__ : {value: "__main__"}
+    });
+
+    "31";
+    scene.bind("mousedown", down);
+    "32";
+    scene.bind("mouseup", up);
+    "35";
+    use_ruler = true;
+    "36";
+    if (use_ruler) {
+        "38";
+        dx = 1;
+        "39";
+        box_x = launch_pos.x["+"](.5["*"](dx));
+        "40";
+        box_x_max = box_x;
+        "41";
+        while (box_x["<="](box_x_max)) {
+            "42";
+            RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({pos: vec(box_x, .05["-u"](), 0), size: vec(.95["*"](dx), .05, .05), color: color.white, opacity: .7})]);
+            "43";
+            box_x=box_x["+"](dx);
+        }
+        "46";
+        dy = dx;
+        "47";
+        box_y = launch_pos.y["-"](.35)["+"](.5["*"](dy));
+        "48";
+        box_y_max = max(box_y["-u"](), 3);
+        "49";
+        while (box_y["<="](box_y_max)) {
+            "50";
+            RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({pos: vec(5["-u"](), box_y, 0), size: vec(.05, .95["*"](dy), .05), color: color.white, opacity: .7})]);
+            "51";
+            box_y=box_y["+"](dy);
+        }
+    }
+    "57";
+    angle = 5;
+    "58";
+    delta_angle = 10;
+    "59";
+    max_angle = 5;
+    "62";
+    min_angle2 = 0;
+    "63";
+    delta_angle2 = 3;
+    "64";
+    max_angle2 = 0;
+    "67";
+    min_spin = 0;
+    "68";
+    delta_spin = 10;
+    "69";
+    max_spin = 400;
+    "71";
+    air_density = 1.2041;
+    "76";
+    RS_interpolate_kwargs.call(this, gdisplay, [RS_desugar_kwargs({title: "Spin vs Range of a Table Tennis Ball", xtitle: "Spin, w, (rev/s)", ytitle: "Range, R, (m)"})]);
+    "77";
+    spin_vs_range = RS_interpolate_kwargs.call(this, gcurve, [RS_desugar_kwargs({color: vec(0, 1, 0)})]);
+    "78";
+    spin_vs_range1 = RS_interpolate_kwargs.call(this, gdots, [RS_desugar_kwargs({color: vec(1, .5, 0), size: 4})]);
+    "81";
+    RS_interpolate_kwargs.call(this, gdisplay, [RS_desugar_kwargs({title: "Inverse Regression", xtitle: "Spin, w, (rev/s)", ytitle: "Range, R, (m)"})]);
+    "82";
+    inverse_regression = RS_interpolate_kwargs.call(this, gcurve, [RS_desugar_kwargs({color: vec(0, 1, 1)})]);
+    "85";
+    while (angle["<="](max_angle)) {
+        "87";
+        angle2 = min_angle2;
+        "88";
+        while (angle2["<="](max_angle2)) {
+            "90";
+            spin = min_spin;
+            "91";
+            while (spin["<="](max_spin)) {
+                "94";
+                projectile = RS_interpolate_kwargs.call(this, sphere, [RS_desugar_kwargs({pos: launch_pos, radius: .02, color: color.orange, make_trail: true})]);
+                "96";
+                projectile.area = pi["*"](projectile.radius["**"](2));
+                "97";
+                projectile.speed = 20;
+                "98";
+                theta = angle["*"](pi)["/"](180);
+                "99";
+                projectile.angle2 = angle2["*"](pi)["/"](180);
+                "101";
+                projectile.velocity = vec(projectile.speed["*"](cos(theta))["*"](cos(projectile.angle2)), projectile.speed["*"](sin(theta)), projectile.speed["*"](cos(theta))["*"](sin(projectile.angle2)));
+                "105";
+                drag_coeff = .508["+"](Math.pow((1["/"](22.053["+"](4.196["*"](Math.pow((mag(projectile.velocity)["/"](spin)["*"](2)["*"](pi)), 2.5))))), .4));
+                "106";
+                lift_coeff = 1["/"](2.022["+"](.981["*"](mag(projectile.velocity))["/"](spin)["*"](2)["*"](pi)));
+                "108";
+                projectile.mass = .0027;
+                "109";
+                grav_field = 9.81;
+                "111";
+                dt = .001;
+                "112";
+                time = 0;
+                "115";
+                angle_label.text = "Angle = "["+"](str(angle))["+"](" degrees");
+                "116";
+                angle2_label.text = "Angle2 = "["+"](str(angle2))["+"](" degrees");
+                "117";
+                spin_label.text = "Spin = "["+"](str(spin))["+"](" revolutions/s");
+                "118";
+                speed_label.text = "Speed = "["+"](str(projectile.speed))["+"](" m/s");
+                "121";
+                while (projectile.pos.y[">="](0)) {
+                    "122";
+                    (await rate(500));
+                    "124";
+                    grav_force = vector(0, projectile.mass["-u"]()["*"](grav_field), 0);
+                    "126";
+                    vhat = projectile.velocity["/"](mag(projectile.velocity));
+                    "127";
+                    drag_force = .5["*"](air_density)["*"](drag_coeff)["*"](projectile.area)["*"](Math.pow(mag(projectile.velocity), 2))["*"](vhat["-u"]());
+                    "129";
+                    vhat_perp = cross(vector(0, 0, 1["-u"]()), vhat);
+                    "130";
+                    life_force = .5["*"](air_density)["*"](lift_coeff)["*"](projectile.area)["*"](Math.pow(mag(projectile.velocity), 2))["*"](vhat_perp);
+                    "132";
+                    force = grav_force["+"](drag_force)["+"](life_force);
+                    "135";
+                    projectile.velocity=projectile.velocity["+"](force["/"](projectile.mass)["*"](dt));
+                    "138";
+                    projectile.pos=projectile.pos["+"](projectile.velocity["*"](dt));
+                    "141";
+                    time=time["+"](dt);
+                    "144";
+                    if (projectile.pos.x[">"](box_x_max)) {
+                        "146";
+                        box_x_max=box_x_max["+"](dx);
+                        "147";
+                        RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({pos: vec(box_x_max, .05["-u"](), 0), size: vec(.95["*"](dx), .05, .05), color: color.white, opacity: .7})]);
+                        "152";
+                    }
+                    if (projectile.pos.y[">"](box_y_max)) {
+                        "154";
+                        box_y_max=box_y_max["+"](dy);
+                        "155";
+                        RS_interpolate_kwargs.call(this, box, [RS_desugar_kwargs({pos: vec(5["-u"](), box_y_max["-"](.6), 0), size: vec(.05, .95["*"](dy), .05), color: color.white, opacity: .7})]);
+                    }
+                }
+                "161";
+                spin=spin["+"](delta_spin);
+                "164";
+                spin_vs_range.plot(spin, projectile.pos.x["-"](launch_pos.x));
+                "165";
+                spin_vs_range1.plot(spin, projectile.pos.x["-"](launch_pos.x));
+                "168";
+                inverse_regression.plot(spin, 2.4["+"](37.4["/"](spin)));
+                "171";
+                print("rotation = ", spin, "range = ", projectile.pos.x["-"](launch_pos.x), "final time = ", time);
+            }
+            "174";
+            angle2=angle2["+"](delta_angle2);
+        }
+        "177";
+        angle=angle["+"](delta_angle);
+    }
+};
+if (!__main__.__module__) Object.defineProperties(__main__, {
+    __module__ : {value: "__main__"}
+});
+
+;$(function(){ window.__context = { glowscript_container: $("#glowscript").removeAttr("id") }; __main__() })})()
+// END JAVASCRIPT
+
+//--><!]]></script>
+</div>
